@@ -33,4 +33,4 @@ A variety of free 3rd party libraries may help us in determining music compariso
 [FingerprintRecognition]: https://code.google.com/p/musicg/source/browse/src/com/musicg/main/demo/FingerprintRecognitionDemo.java?r=f2fbf166a1d95059650274d6ee668ec08fec03cf
 [FingerprintSimilarity]: https://code.google.com/p/musicg/source/browse/src/com/musicg/fingerprint/FingerprintSimilarity.java?r=f2fbf166a1d95059650274d6ee668ec08fec03cf
 [Wave]: https://code.google.com/p/musicg/source/browse/src/com/musicg/wave/Wave.java?r=f2fbf166a1d95059650274d6ee668ec08fec03cf
-[FingerSimilarityComputer]: https://code.google.com/p/musicg/source/browse/src/com/musicg/fingerprint/FingerprintSimilarityComputer.java
+[FingerprintSimilarityComputer]: https://code.google.com/p/musicg/source/browse/src/com/musicg/fingerprint/FingerprintSimilarityComputer.java
