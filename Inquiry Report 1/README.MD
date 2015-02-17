@@ -12,13 +12,13 @@ We want to be able to have a means to compare songs.
     a. [Song2Song Documentation]
 3. [musicg - Java Library]
 
-### 1. Mini-abstract and relevance of [Comparison of Medieval, Renaissance & Baroque Musical Styles] ###
+### 1. Mini-abstract and relevance of [Comparison of Medieval, Renaissance & Baroque Musical Styles]
 
-    There are many channels across which music can be compared. We must find it important to specify the attributes we find important in our comparisons. Given the abstract nature of the term
-    "comparison" (i.e. what are we specifically trying to compare about these multiple items) and the broad spectrum of attributes applicable to music, comparison in a generic form would be almost
-    impossible to generalize. The resource mentions specifically looks at multiple time periods (Medieval, Renaissance & Baroque) and compares their overall musical styles. For this analysis, the
-    author chose to focus on specific musical qualities: tone color, texture, harmony, rhythm, melody, and form. By defining these specific traits, the author firmly gave grounds for comparison. You
-    can also see [Tristan's Compartive Description Forum Post] where he describes in brief what goes into comparing songs.
+There are many channels across which music can be compared. We must find it important to specify the attributes we find important in our comparisons. Given the abstract nature of the term
+"comparison" (i.e. what are we specifically trying to compare about these multiple items) and the broad spectrum of attributes applicable to music, comparison in a generic form would be almost
+impossible to generalize. The resource mentions specifically looks at multiple time periods (Medieval, Renaissance & Baroque) and compares their overall musical styles. For this analysis, the
+author chose to focus on specific musical qualities: tone color, texture, harmony, rhythm, melody, and form. By defining these specific traits, the author firmly gave grounds for comparison. You
+can also see [Tristan's Compartive Description Forum Post] where he describes in brief what goes into comparing songs.
 
 ### 2. Mini-abstract and relevance of [Echonest Developer Forums] and [Song2Song Documentation] ###
 
