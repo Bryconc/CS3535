@@ -23,11 +23,11 @@ Execute pitch_quantifier.py with a song/songs to be visualized. For our example 
 ```
 
 The program will execute and produce the following image
-    ![Pitch Quantified Graph Example](https://github.com/Bryconc/CS3535/blob/master/Research%20Module%201/Pitch%20Frenquency%20Count%20for%20Let_It_Go.mp3,%20and%20For_The_First_Time_In_Forever.mp3.png?raw=true)
+<img src="https://github.com/Bryconc/CS3535/blob/master/Research%20Module%201/Pitch%20Frenquency%20Count%20for%20Let_It_Go.mp3,%20and%20For_The_First_Time_In_Forever.mp3.png?raw=true" alt="Pitch Quantified Graph Example" width="400" height="400">
 
 If the program had been run on each song individually it would produce these two separate graphs
-    ![Pitch Quantified Graph Example - First Time](https://github.com/Bryconc/CS3535/blob/master/Research%20Module%201/Pitch%20Frenquency%20Count%20for%20For_The_First_Time_In_Forever.mp3.png?raw=true)
-    ![Pitch Quantified Graph Example - Let It Go](https://github.com/Bryconc/CS3535/blob/master/Research%20Module%201/Pitch%20Frenquency%20Count%20for%20Let_It_Go.mp3.png?raw=true)
+<img src="https://github.com/Bryconc/CS3535/blob/master/Research%20Module%201/Pitch%20Frenquency%20Count%20for%20For_The_First_Time_In_Forever.mp3.png?raw=true" alt="Pitch Quantified Graph Example - First Time" width="400" height="400">
+<img src="https://github.com/Bryconc/CS3535/blob/master/Research%20Module%201/Pitch%20Frenquency%20Count%20for%20Let_It_Go.mp3.png?raw=true" alt="Pitch Quantified Graph Example - Let It Go" width="400" height="400">
 
 **Code Explanation**
 
