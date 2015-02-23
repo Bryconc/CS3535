@@ -14,6 +14,10 @@ To use pitch_quantifier.py, you will need:
       - echonest.remix
       - matplotlib
 
+**Future Use**
+
+This application would be useful if someone wanted to visually be able to figure out which pitches were more dominant in a song or series of songs. This could extend to some interesting pitch-shifting applications
+
 **Example**
 
 Execute pitch_quantifier.py with a song/songs to be visualized. For our example we will take the two songs Let It Go and For the First Time in Forever.
