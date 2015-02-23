@@ -102,9 +102,10 @@ Now we've got our graph labeled appropriately and ready to go. For convenience's
 
 
 **Resources**
-    1. [Analyzer Documentation]
-    2. [pyploy Documentation]
-    3. [numpy Documentation]
+
+1. [Analyzer Documentation]
+2. [pyploy Documentation]
+3. [numpy Documentation]
 
 
 [Analyzer Documentation]: http://developer.echonest.com/docs/v4/_static/AnalyzeDocumentation.pdf
