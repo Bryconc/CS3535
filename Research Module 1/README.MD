@@ -23,7 +23,11 @@ Execute pitch_quantifier.py with a song/songs to be visualized. For our example 
 ```
 
 The program will execute and produce the following image
-    ![Pitch Quantified Graph Example](path/to/be/generated.img)
+    ![Pitch Quantified Graph Example](https://github.com/Bryconc/CS3535/blob/master/Research%20Module%201/Pitch%20Frenquency%20Count%20for%20Let_It_Go.mp3,%20and%20For_The_First_Time_In_Forever.mp3.png?raw=true)
+
+If the program had been run on each song individually it would produce these two separate graphs
+    ![Pitch Quantified Graph Example - First Time](https://github.com/Bryconc/CS3535/blob/master/Research%20Module%201/Pitch%20Frenquency%20Count%20for%20For_The_First_Time_In_Forever.mp3.png?raw=true)
+    ![Pitch Quantified Graph Example - Let It Go](https://github.com/Bryconc/CS3535/blob/master/Research%20Module%201/Pitch%20Frenquency%20Count%20for%20Let_It_Go.mp3.png?raw=true)
 
 **Code Explanation**
 
@@ -98,6 +102,11 @@ Now we've got our graph labeled appropriately and ready to go. For convenience's
 
 
 **Resources**
+1. [Analyzer Documentation]
+2. [pyploy Documentation]
+3. [numpy Documentation]
+
+
 [Analyzer Documentation]: http://developer.echonest.com/docs/v4/_static/AnalyzeDocumentation.pdf
 [pyploy Documentation]: http://matplotlib.org/api/pyplot_api.html
 [numpy Documentation]: http://docs.scipy.org/doc/
