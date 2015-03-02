@@ -1,5 +1,7 @@
-# By Rob Ochshorn and Adam Baratz.
-# Slightly refactored by Joshua Lifton.
+# By Brycon Carpenter
+# Based on the Cowbell example from remix-examples by Rob Ochshorn and Adam Baratz.
+# Modified to insert hard base instead of cowbell
+
 import numpy
 import os
 import random
