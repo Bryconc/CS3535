@@ -9,7 +9,7 @@ We want to be able to integrate Spotify with our applications.
 # Resources #
 1. [Spotify Partnership Information]/[Echonest - Spotify Overview]
 2. [Spotipy Documentation]
-3. [Echonest-Spotify Examples Git Repo]
+3. [Echonest-Spotify Examples GitHub Repo]
 
 ### Mini-abstract and relevance of [Spotify Partnership Information]/[Echonest - Spotify Overview]  ###
 
