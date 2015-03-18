@@ -6,6 +6,9 @@ import spotipy.util as util
 
 import echonest.remix.audio as audio
 
+from aqplayer import Player
+
+import random
 import urllib
 
 TEST_SIZE = 5
@@ -31,6 +34,16 @@ def sample_playlist(user, playlist_id):
 
 
         print("Obtained %d tracks with previews" % len(track_list))
+
+        print("Playing samples")
+        while samples:
+            sample = random.choice(samples)
+            bars = sample.analysis.bars
+            aqplayer = Player(sample)
+            samples.remove(sample)
+
+            for bar in bars:
+                aqplayer.play(bar)
 
 def add_tracks(tracks):
     for track in tracks["items"]:
