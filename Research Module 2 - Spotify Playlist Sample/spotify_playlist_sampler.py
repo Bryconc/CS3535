@@ -28,7 +28,7 @@ def sample_playlist(user, playlist_id):
 
         add_tracks(tracks)
 
-        while tracks["next"] and len(track_list) < 5:
+        while tracks["next"] and len(track_list) < TEST_SIZE:
             tracks = sp.next(tracks)
             add_tracks(tracks)
 
