@@ -5,13 +5,15 @@ import spotipy
 import spotipy.util as util
 
 import echonest.remix.audio as audio
+from echonest.remix.support.ffmpeg import ffmpeg
 
-from aqplayer import Player
-
+import winsound
+import tempfile
 import random
 import urllib
 
-TEST_SIZE = 5
+TEST_SIZE = 50
+DEBUG_TRACK = False
 
 track_list = []
 samples = []
@@ -37,26 +39,46 @@ def sample_playlist(user, playlist_id):
 
         print("Playing samples")
         while samples:
-            sample = random.choice(samples)
-            bars = sample.analysis.bars
-            aqplayer = Player(sample)
+            index = random.randint(0, len(track_list))
+            sample = samples[index]
             samples.remove(sample)
-
-            for bar in bars:
-                aqplayer.play(bar)
+            track = track_list[index]
+            track_list.remove(track)
+            print("Playing %s - %s" % (track["track"]["name"], track["track"]["artists"][0]["name"]))
+            winsound.PlaySound(get_wav(sample), winsound.SND_FILENAME)
 
 def add_tracks(tracks):
     for track in tracks["items"]:
-        if track['track']['preview_url']:
+        if track['track']['preview_url'] and len(track_list) < TEST_SIZE:
             track_list.append(track)
-            print("Added %s" % track['track']['name'])
+            print("%d. Added %s" % (len(track_list), track['track']['name']))
+
+            image, headers = urllib.urlretrieve(track["track"]["album"]["images"][0]["url"], "test.png")
+
+            if DEBUG_TRACK:
+                from pprint import pprint
+                pprint(track)
+                exit()
 
             print("Downloading %s" % track['track']['preview_url'])
             mp3file, headers = urllib.urlretrieve(track['track']['preview_url'], "test.mp3")
             samples.append(audio.LocalAudioFile(mp3file))
 
-
-
+def get_wav(audio_file): # Code modified from Luke Stack's aqplayer.
+        """
+        Helper method for __init__
+        :return .wav file from the LocalAudioFile
+        """
+        if audio_file.filename.lower().endswith(".wav") and (audio_file.sampleRate, audio_file.numChannels) == (44100, 2):
+            file_to_read = audio_file.filename
+        elif audio_file.convertedfile:
+            file_to_read = audio_file.convertedfile
+        else:
+            temp_file_handle, audio_file.convertedfile = tempfile.mkstemp(".wav")
+            audio_file.af.sampleRate, audio_file.numChannels = ffmpeg(audio_file.filename, audio_file.convertedfile, overwrite=True,
+                    numChannels=audio_file.numChannels, sampleRate=audio_file.sampleRate, verbose=audio_file.verbose)
+            file_to_read = audio_file.convertedfile
+        return file_to_read
 
 
 
