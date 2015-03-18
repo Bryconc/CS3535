@@ -1,22 +1,24 @@
 __author__ = 'Brycon'
 
-import sys
 import spotipy
 import spotipy.util as util
 
 import echonest.remix.audio as audio
 from echonest.remix.support.ffmpeg import ffmpeg
 
+import sys
 import winsound
 import tempfile
 import random
 import urllib
 
-TEST_SIZE = 50
+TEST_SIZE = 20
 DEBUG_TRACK = False
 
+master_track_list = []
 track_list = []
 samples = []
+
 
 def sample_playlist(user, playlist_id):
     token = util.prompt_for_user_token(user, client_id="1e9958fdd24746aea8959ccf6f724441", client_secret="a5bcdc07002c463f87a7d827c1638b91", redirect_uri="http://www.google.com")
@@ -30,16 +32,17 @@ def sample_playlist(user, playlist_id):
 
         add_tracks(tracks)
 
-        while tracks["next"] and len(track_list) < TEST_SIZE:
+        while tracks["next"]:
             tracks = sp.next(tracks)
             add_tracks(tracks)
 
+        add_sampled_tracks()
 
         print("Obtained %d tracks with previews" % len(track_list))
 
         print("Playing samples")
         while samples:
-            index = random.randint(0, len(track_list))
+            index = random.randint(0, len(track_list) - 1)
             sample = samples[index]
             samples.remove(sample)
             track = track_list[index]
@@ -47,24 +50,42 @@ def sample_playlist(user, playlist_id):
             print("Playing %s - %s" % (track["track"]["name"], track["track"]["artists"][0]["name"]))
             winsound.PlaySound(get_wav(sample), winsound.SND_FILENAME)
 
+
 def add_tracks(tracks):
     for track in tracks["items"]:
-        if track['track']['preview_url'] and len(track_list) < TEST_SIZE:
-            track_list.append(track)
-            print("%d. Added %s" % (len(track_list), track['track']['name']))
+        if track['track']['preview_url']:
+            master_track_list.append(track)
 
-            image, headers = urllib.urlretrieve(track["track"]["album"]["images"][0]["url"], "test.png")
 
-            if DEBUG_TRACK:
-                from pprint import pprint
-                pprint(track)
-                exit()
+def add_sampled_tracks():
+    for i in range(TEST_SIZE):
+        index = random.randint(0, len(master_track_list) - 1)
+        track = master_track_list[index]
+        master_track_list.remove(track)
+        track_list.append(track)
+        print("%d. Added %s" % (len(track_list), track['track']['name']))
+        print("Downloading %s" % track['track']['preview_url'])
+        mp3file, headers = urllib.urlretrieve(track['track']['preview_url'], "test.mp3")
+        samples.append(audio.LocalAudioFile(mp3file))
 
-            print("Downloading %s" % track['track']['preview_url'])
-            mp3file, headers = urllib.urlretrieve(track['track']['preview_url'], "test.mp3")
-            samples.append(audio.LocalAudioFile(mp3file))
 
-def get_wav(audio_file): # Code modified from Luke Stack's aqplayer.
+#   Old method of adding tracks that always picked in the same order.
+# def add_tracks(tracks):
+#     for track in tracks["items"]:
+#         if track['track']['preview_url'] and len(track_list) < TEST_SIZE:
+#             track_list.append(track)
+#             print("%d. Added %s" % (len(track_list), track['track']['name']))
+#
+#             if DEBUG_TRACK:
+#                 from pprint import pprint
+#                 pprint(track)
+#                 exit()
+#
+#             print("Downloading %s" % track['track']['preview_url'])
+#             mp3file, headers = urllib.urlretrieve(track['track']['preview_url'], "test.mp3")
+#             samples.append(audio.LocalAudioFile(mp3file))
+
+def get_wav(audio_file):  # Code modified from Luke Stack's aqplayer.
         """
         Helper method for __init__
         :return .wav file from the LocalAudioFile
@@ -79,9 +100,6 @@ def get_wav(audio_file): # Code modified from Luke Stack's aqplayer.
                     numChannels=audio_file.numChannels, sampleRate=audio_file.sampleRate, verbose=audio_file.verbose)
             file_to_read = audio_file.convertedfile
         return file_to_read
-
-
-
 
 
 if __name__ == "__main__":
