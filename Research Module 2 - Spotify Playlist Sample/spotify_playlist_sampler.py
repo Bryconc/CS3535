@@ -12,8 +12,8 @@ import tempfile
 import random
 import urllib
 
-TEST_SIZE = 20
-DEBUG_TRACK = False
+TEST_SIZE = 5
+DEBUG_TRACK = True
 
 master_track_list = []
 track_list = []
