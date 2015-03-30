@@ -5,6 +5,7 @@ import threading
 import os
 import winsound
 
+
 class WinPlayer(object):
 
     def __init__(self):
@@ -39,7 +40,6 @@ class WinPlayer(object):
         return file_extension == '.wav'
 
 
-
 class PlayThread(threading.Thread):
 
     def __init__(self, player, event):
@@ -51,8 +51,8 @@ class PlayThread(threading.Thread):
         while True:
             if self.play_event.is_set():
                 next_audio = self.player.get_next_audio()
-                print("Playing %s" % next_audio)
-                winsound.PlaySound(next_audio, winsound.SND_FILENAME)
+                print("Playing " + next_audio)
+                winsound.PlaySound(next_audio, winsound.SND_FILENAME | winsound.SND_NOSTOP)
             else:
                 self.play_event.wait()
 

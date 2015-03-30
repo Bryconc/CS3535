@@ -1,11 +1,13 @@
 __author__ = 'Brycon'
 
-import winplayer
 import wave
 import os
 import tempfile
 
 from echonest.remix.support.ffmpeg import ffmpeg
+
+import winplayer
+
 
 TEMP_DIRECTORY = "Temp_Folder"
 
@@ -17,7 +19,7 @@ class WinAQPlayer(winplayer.WinPlayer):
         self.audio = audio
         self.wav_file = wave.open(self.get_wav(), 'rb')
         self.temp_files = []
-        #WinAQPlayer._clear_temp()
+        WinAQPlayer._clear_temp()
 
     def add_audio(self, AudioQuantum):
         wav_file = self.wav_file
@@ -49,6 +51,7 @@ class WinAQPlayer(winplayer.WinPlayer):
 
     @staticmethod
     def _clear_temp():
+        print("Clearing " + TEMP_DIRECTORY)
         for f in os.listdir(TEMP_DIRECTORY):
             os.remove(TEMP_DIRECTORY + "/" + f)
 
