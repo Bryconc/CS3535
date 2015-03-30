@@ -20,7 +20,7 @@ def main():
     import time
 
     time.sleep(50)
-    player.pause()
+    #player.pause()
     time.sleep(20)
     player.play()
 

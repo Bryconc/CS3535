@@ -5,8 +5,7 @@ import threading
 import os
 import winsound
 
-
-class WinPlayer():
+class WinPlayer(object):
 
     def __init__(self):
         self.song_queue = q.Queue()
@@ -37,7 +36,8 @@ class WinPlayer():
     @staticmethod
     def __is_wav_file(audio):
         file_name, file_extension = os.path.splitext(audio)
-        return file_extension.lower() == '.wav'
+        return file_extension == '.wav'
+
 
 
 class PlayThread(threading.Thread):
