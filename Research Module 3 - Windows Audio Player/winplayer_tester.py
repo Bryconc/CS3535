@@ -1,7 +1,9 @@
 __author__ = 'Brycon'
 
 import os
+
 import winplayer as wp
+
 
 def main():
     test_directory = "Test_Files"
@@ -20,7 +22,7 @@ def main():
     import time
 
     time.sleep(50)
-    #player.pause()
+    player.pause()
     time.sleep(20)
     player.play()
 
