@@ -128,4 +128,51 @@ def sample_menubutton():
     top.mainloop()
 
 
-sample_menubutton()
+def sample_message():
+    title = "Sample Message"
+
+    top = tk.Tk()
+    M = tk.Message(top, text="Sample multiline message. Sample multiline message. Sample multiline message.")
+    M.pack()
+
+    top.title(title)
+    top.mainloop()
+
+
+def sample_radiobutton():
+    def sel():
+        selection = "You selected the option " + str(var.get())
+        label.config(text=selection)
+
+    title = "Sample Radiobutton"
+
+    top = tk.Tk()
+    var = tk.IntVar()
+    R1 = tk.Radiobutton(top, text="Option 1", variable=var, value=1, command=sel)
+    R1.pack(anchor=tk.W)
+
+    R2 = tk.Radiobutton(top, text="Option 2", variable=var, value=2, command=sel)
+    R2.pack(anchor=tk.W)
+
+    R3 = tk.Radiobutton(top, text="Option 3", variable=var, value=3, command=sel)
+    R3.pack(anchor=tk.W)
+
+    label = tk.Label(top)
+    label.pack()
+    top.title(title)
+    top.mainloop()
+
+
+def sample_scale():
+    title = "Sample Scale"
+
+    top = tk.Tk()
+
+    scale = tk.Scale(top, orient=tk.HORIZONTAL)
+    scale.pack(anchor=tk.CENTER)
+
+    top.title(title)
+    top.mainloop()
+
+
+sample_scale()
