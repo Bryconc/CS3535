@@ -27,7 +27,7 @@ Tkinter has a variety of widgets that can be graphically rendered:
 
 |    Widget   | Description                                                             |   |
 |:-----------:|-------------------------------------------------------------------------|---|
-|    Button   | Renders a button in your application                                    |   |
+|    Button   | Renders a button in your application                                    | !(https://github.com/Bryconc/CS3535/blob/master/Inquiry%20Report%204%20-%20GUI%20Programming/Sample%20Images/Sample%20Button.png?raw=true)  |
 |    Canvas   | Draws shapes in your application                                        |   |
 | Checkbutton | Displays options as checkboxes. The user can select multiple options    |   |
 | Entry       | Single line text input field                                            |   |
