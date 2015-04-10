@@ -175,4 +175,39 @@ def sample_scale():
     top.mainloop()
 
 
-sample_scale()
+def sample_scrollbar():
+    title = "Sample Scrollbar"
+
+    top = tk.Tk()
+
+    scr = tk.Scrollbar(top)
+    scr.pack(side=tk.RIGHT, fill=tk.Y)
+
+    mylist = tk.Listbox(top, yscrollcommand=scr.set)
+    for line in range(100):
+        mylist.insert(tk.END, "This is line number " + str(line))
+
+    mylist.pack(side=tk.RIGHT, fill=tk.BOTH)
+    scr.config(command=mylist.yview)
+    top.title(title)
+    top.mainloop()
+
+
+def sample_text():
+    title = "Sample Text"
+
+    top = tk.Tk()
+
+    text = tk.Text(top)
+    text.insert(tk.INSERT, "This is a long multiline comment.")
+    text.insert(tk.INSERT, "This is a long multiline comment.")
+    text.insert(tk.INSERT, "This is a long multiline comment.")
+    text.insert(tk.INSERT, "This is a long multiline comment.")
+    text.insert(tk.INSERT, "This is a long multiline comment.")
+    text.pack()
+
+    top.title(title)
+    top.mainloop()
+
+
+sample_text()
