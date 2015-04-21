@@ -18,3 +18,6 @@ There are many things I wish to improve upon this application with:
 * The application only supports the playlist it was initalized with. I wish to make it variable
 * I want to add more functionality for exporting favorited tracks to a Spotify playlist. As of now, the menu options are there for place holders.
 
+**GUI Sample**
+
+<img src="https://github.com/Bryconc/CS3535/blob/master/Research%20Module%205%20-%20Player%20GUI/GUI_Sample.jpg?raw=true">
