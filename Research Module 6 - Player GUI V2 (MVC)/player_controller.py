@@ -54,3 +54,6 @@ class Controller(object):
     def set_spotipy_information(self, username, playlist_id):
         self.model.set_spotipy_information(username, playlist_id)
 
+    def export_favorites(self, export_type, **kwargs):
+        self.model.export_favorites(export_type, **kwargs)
+

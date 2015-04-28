@@ -44,6 +44,7 @@ class DownloaderThread(threading.Thread):
                     self.analyzer_thread.queue_analysis(DOWNLOAD_DIRECTORY + track['track']['id'] + ".mp3", track)
                 self.downloaded += 1
             except ssl.SSLError:
+                print("***** Error downloading " + track['track']['name'] + " *****")
                 self.queue_download(track)
 
     @staticmethod
@@ -76,12 +77,15 @@ class AnalyzerThread(threading.Thread):
         self.running = True
         while self.analyzed < self.amount and self.running:
             try:
+                # print("Checking for new analysis... %d of %d with queue size %d" % (self.analyzed, self.amount, self.analyze_queue.qsize()))
                 mp3file, track = self.analyze_queue.get()
+                #print("Analyzing " + track['track']['name'])
                 af = audio.LocalAudioFile(mp3file, verbose=DEBUG_ANALYZER)
+                #print("Completed Analysis")
                 self.af_list.append(af)
                 wav = AnalyzerThread.__get_wav(af)
+                #print("Attempting play queue...")
                 self.player.add_audio(wav, track)
-                os.remove(mp3file)
                 self.analyzed += 1
             except Exception as e:
                 print("***** Error processing " + track['track']['name'] + " *****")

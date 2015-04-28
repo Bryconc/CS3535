@@ -1,5 +1,6 @@
 __author__ = 'Brycon'
 
+import subprocess as sp
 from functools import partial
 from random import shuffle
 
@@ -123,16 +124,51 @@ class Model(Observable):
         if self.player and wait:
             self.player.wait_until_finished(callback)
 
-
     def new_playlist(self, user_id, playlist_id):
         if self.player:
             self.unload_player(partial(self.set_spotify_playlist, user_id, playlist_id))
         else:
             self.set_spotify_playlist(user_id, playlist_id)
 
+    def export_favorites(self, export_type, **kwargs):
+        print("Exporting favorites type %s" % export_type)
+        if export_type == 'csv':
+            self.export_csv(**kwargs)
+        elif export_type == 'existing':
+            print("In here")
+            self.export_existing_playlist(kwargs["user"], kwargs["playlist"])
+
+    def export_csv(self, **kwargs):
+        file_name = kwargs['file_name']
+        information = kwargs['information']
+
+        with open(file_name + ".csv", 'w') as csv_file:
+            for track in self.favorites_list:
+                information_list = []
+
+                if 'name' in information:
+                    information_list.append(track['track']['name'])
+
+                if 'artists' in information:
+                    artists = [x['name'] for x in track['track']['artists']]
+                    information_list.append("-".join(artists))
+
+                if 'album' in information:
+                    information_list.append(track['track']['album']['name'])
+
+                if 'preview_url' in information:
+                    information_list.append(track['track']['preview_url'])
+
+                csv_file.write(",".join(information_list) + "\n")
+
+        sp.call(["notepad.exe ", file_name + ".csv"])
+
+    def export_existing_playlist(self, user, playlist):
+        self.__append_to_playlist(user, playlist)
+
     ###################################
     # #
-    #  BEGIN PRIVATE UTILITY METHODS  #
+    # BEGIN PRIVATE UTILITY METHODS  #
     #                                 #
     ###################################
 
@@ -144,7 +180,9 @@ class Model(Observable):
         if not self.spotipy_username or not self.spotipy_playlist_id:
             raise InvalidInputException("You must set the spotipy information first.")
 
-        return spotipy.util.prompt_for_user_token(self.spotipy_username, client_id=CLIENT_ID,
+        scopes = 'playlist-modify-public playlist-modify-private'
+
+        return spotipy.util.prompt_for_user_token(self.spotipy_username, scope=scopes, client_id=CLIENT_ID,
                                                   client_secret=CLIENT_SECRET, redirect_uri=REDIRECT_URI)
 
     def __request_spotipy_object(self, token):
@@ -182,6 +220,16 @@ class Model(Observable):
             track = self.master_track_list[0]
             self.master_track_list.remove(track)
             self.downloader.queue_download(track)
+
+    def __append_to_playlist(self, user, playlist):
+        track_ids = self.__get_favorites_track_ids()
+        self.sp.user_playlist_add_tracks(user, playlist, track_ids)
+
+    def __get_favorites_track_ids(self):
+        result = []
+        for track in self.favorites_list:
+            result.append(track['track']['id'])
+        return result
 
 
 class InvalidInputException(Exception):

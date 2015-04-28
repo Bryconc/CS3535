@@ -10,6 +10,7 @@ from functools import partial
 
 from PIL import Image, ImageTk
 
+import prompts
 from util.observer import Observer
 from util.SynchronizedListbox import SynchronizedListbox
 
@@ -111,7 +112,10 @@ class View(Observer):
         self.file_menu.add_command(label="Exit", command=self.__close_handler)
 
         self.export_menu = tk.Menu(self.menu_bar, tearoff=0)
-        self.export_menu.add_command(label="Export to existing playlist")
+        self.export_menu.add_command(label="Export to CSV file.", command=self.__prompt_for_export_csv)
+        self.export_menu.add_separator()
+        self.export_menu.add_command(label="Export to existing playlist",
+                                     command=self.__prompt_for_export_existing_playlist)
         self.export_menu.add_command(label="Export to new playlist")
 
         self.playlist_menu = tk.Menu(self.menu_bar, tearoff=0)
@@ -147,7 +151,13 @@ class View(Observer):
         self.notebook.pack()
 
     def __prompt_for_playlist_input(self):
-        playlist_prompt = PlaylistPrompt(self.root, self.controller)
+        playlist_prompt = prompts.PlaylistPrompt(self.root, self.controller)
+
+    def __prompt_for_export_csv(self):
+        export_csv = prompts.ExportCSVPrompt(self.root, self.controller)
+
+    def __prompt_for_export_existing_playlist(self):
+        export_existing = prompts.ExportExistingPlaylistPrompt(self.root, self.controller)
 
 
 class PlayerFrame(tk.Frame):
@@ -375,109 +385,6 @@ class DetailFrame(tk.Frame):
         self.track_list.delete(0, self.track_list.length())
 
 
-class PlaylistPrompt(tk.Toplevel):
-    def __init__(self, parent, controller, *args, **kwargs):
-        tk.Toplevel.__init__(self, *args, **kwargs)
-        self.__init_prompt()
-        self.parent = parent
-        self.controller = controller
-
-        self.parent.wm_attributes("-disabled", 1)
-        self.wm_attributes("-topmost", 1)
-        self.focus()
-        self.transient(parent)
-        self.protocol("WM_DELETE_WINDOW", self.__close_handler)
-
-    def __close_handler(self):
-        self.parent.wm_attributes("-disabled", 0)
-        self.destroy()
-
-    def __init_prompt(self):
-        self.__init_prompt_label()
-        # self.__init_user_frame()
-        #self.__init_playlist_frame()
-        #self.__init_or_frame()
-        self.__init_url_frame()
-        self.__init_clear_frame()
-        self.__init_submit_button()
-
-    def __init_prompt_label(self):
-        self.prompt_label = tk.Label(self, text="Please enter the Spotify URL below: ")
-        self.prompt_label.pack(pady=10)
-
-    def __init_user_frame(self):
-        self.user_frame = tk.Frame(self)
-        self.user_label = tk.Label(self.user_frame, text="User ID:     ")
-        self.user_entry = tk.Entry(self.user_frame, bd=5)
-        self.user_label.pack(side=tk.LEFT)
-        self.user_entry.pack(side=tk.RIGHT)
-        self.user_frame.pack()
-
-    def __init_playlist_frame(self):
-        self.playlist_frame = tk.Frame(self)
-        self.playlist_label = tk.Label(self.playlist_frame, text="Playlist ID: ")
-        self.playlist_entry = tk.Entry(self.playlist_frame, bd=5)
-        self.playlist_label.pack(side=tk.LEFT)
-        self.playlist_entry.pack(side=tk.RIGHT)
-        self.playlist_frame.pack()
-
-    def __init_clear_frame(self):
-        self.clear_frame = tk.Frame(self)
-
-        self.clear_playlist = tk.IntVar()
-        self.clear_favorites = tk.IntVar()
-        self.clear_playlist.set(1)
-        self.clear_favorites.set(1)
-        self.clear_playlist_checkbox = tk.Checkbutton(self.clear_frame, text="Clear Playlist",
-                                                      variable=self.clear_playlist)
-        self.clear_favorites_checkbox = tk.Checkbutton(self.clear_frame, text="Clear Favorites",
-                                                       variable=self.clear_favorites)
-
-        self.clear_playlist_checkbox.pack(side=tk.LEFT)
-        self.clear_favorites_checkbox.pack(side=tk.RIGHT)
-        self.clear_frame.pack()
-
-    def __init_or_frame(self):
-        self.or_frame = tk.Frame(self, width=20)
-        or_separator_top = ttk.Separator(self.or_frame, orient=tk.HORIZONTAL)
-        or_label = tk.Label(self.or_frame, text="Or")
-        or_separator_bottom = ttk.Separator(self.or_frame, orient=tk.HORIZONTAL)
-        or_separator_top.pack(expand=True, fill=tk.X)
-        or_label.pack()
-        or_separator_bottom.pack(expand=True, fill=tk.X)
-        self.or_frame.pack(expand=True)
-
-    def __init_url_frame(self):
-        self.url_frame = tk.Frame(self)
-        self.url_label = tk.Label(self.url_frame, text="Spotify Url:")
-        self.url_entry = tk.Entry(self.url_frame, bd=5)
-        self.url_label.pack(side=tk.LEFT)
-        self.url_entry.pack(side=tk.RIGHT)
-        self.url_frame.pack()
-
-    def __init_submit_button(self):
-        self.submit_button = tk.Button(self, text="Submit", command=self.__validate_new_playlist)
-        self.submit_button.pack(pady=(0, 10))
-
-    def __validate_new_playlist(self):
-        # if self.url_entry.get():
-        user_id, playlist_id = self.__process_url()
-        #else:
-        #playlist_id = self.playlist_entry.get()
-        #user_id = self.user_entry.get()
-        clear_playlist = self.clear_playlist.get()
-        clear_favorites = self.clear_favorites.get()
-        self.controller.new_playlist(user_id, playlist_id, clear_playlist, clear_favorites)
-        self.__close_handler()
-
-    def __process_url(self):
-        import re
-
-        url = self.url_entry.get()
-        regex = r'./user/(?P<user_id>[a-zA-z0-9]+)/playlist/(?P<playlist_id>[a-zA-z0-9]+)'
-        regexp = re.compile(regex)
-        result = regexp.search(url)
-        return result.group('user_id'), result.group('playlist_id')
 
 
 
