@@ -80,6 +80,7 @@ class View(Observer):
         if 'load' in kwargs:
             if kwargs['load']:
                 self.detail_tab.load_playlist()
+                self.__update_recent_playlists()
 
         if 'count' in kwargs:
             self.player_tab.update_track_count(kwargs['count'])
@@ -130,6 +131,11 @@ class View(Observer):
 
         self.playlist_menu.add_cascade(label="Defaults", menu=self.default_playlists_menu)
 
+        self.recent_playlists_menu = tk.Menu(self.menu_bar, tearoff=0)
+        self.__update_recent_playlists()
+        self.playlist_menu.add_cascade(label="Recents", menu=self.recent_playlists_menu)
+
+
         self.menu_bar.add_cascade(label="File", menu=self.file_menu)
         self.menu_bar.add_cascade(label="Playlist", menu=self.playlist_menu)
         self.menu_bar.add_cascade(label="Export", menu=self.export_menu)
@@ -158,6 +164,17 @@ class View(Observer):
 
     def __prompt_for_export_existing_playlist(self):
         export_existing = prompts.ExportExistingPlaylistPrompt(self.root, self.controller)
+
+    def __update_recent_playlists(self):
+        recent_playlists = self.controller.get_recent_playlists()
+        sorted_keys = sorted(recent_playlists, key=lambda k: recent_playlists[k]['added'], reverse=True)
+        self.recent_playlists_menu.delete(0, tk.END)
+
+        for key in sorted_keys:
+            playlist = recent_playlists[key]
+            self.recent_playlists_menu.add_command(label=playlist['name'],
+                                                   command=partial(self.controller.new_playlist, playlist['owner'],
+                                                                   playlist['id']))
 
 
 class PlayerFrame(tk.Frame):

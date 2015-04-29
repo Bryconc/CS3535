@@ -18,7 +18,7 @@ class WinPlayer(object):
         if not WinPlayer.__is_wav_file(audio):
             raise TypeError("File must be of type .WAV")
 
-        print("Queuing %s" % track['track']['name'])
+        # print("Queuing %s" % track['track']['name'])
         self.song_queue.put((audio, track))
 
     def play(self):

@@ -1,5 +1,8 @@
 __author__ = 'Brycon'
 
+import datetime
+import os
+import pickle
 import subprocess as sp
 from functools import partial
 from random import shuffle
@@ -11,6 +14,10 @@ import winplayer
 from util.threads import DownloaderThread, AnalyzerThread
 from util.observable import Observable
 
+
+RECENT_PICKLE_FILE = "util/recent_playlists.p"
+RECENT_LIMIT = 5
+
 CLIENT_ID = "1e9958fdd24746aea8959ccf6f724441"
 CLIENT_SECRET = "a5bcdc07002c463f87a7d827c1638b91"
 REDIRECT_URI = "http://student.cs.appstate.edu/carpenterba/SpotifySampler/callback.html"
@@ -19,6 +26,8 @@ REDIRECT_URI = "http://student.cs.appstate.edu/carpenterba/SpotifySampler/callba
 class Model(Observable):
     def __init__(self):
         super(Model, self).__init__()
+
+        self.recent_playlists = self.__load_recent_playlists()
 
         self.master_track_list = []
         self.playlist_list = []
@@ -85,6 +94,9 @@ class Model(Observable):
 
     def get_master_track_list(self):
         return self.master_track_list
+
+    def get_recent_playlists(self):
+        return self.recent_playlists
 
     def get_playlist_list(self):
         return self.playlist_list
@@ -169,7 +181,7 @@ class Model(Observable):
     ###################################
     # #
     # BEGIN PRIVATE UTILITY METHODS  #
-    #                                 #
+    # #
     ###################################
 
     def __set_spotipy_info(self, username, playlist_id):
@@ -197,6 +209,7 @@ class Model(Observable):
         if not self.sp:
             raise InvalidInputException("You must request a Spotipy object first.")
         self.spotify_playlist = self.sp.user_playlist(self.spotipy_username, self.spotipy_playlist_id)
+        self.__add_recent_playlist(self.spotify_playlist)
 
     def __load_tracks(self):
         tracks = self.spotify_playlist["tracks"]
@@ -222,12 +235,63 @@ class Model(Observable):
             self.downloader.queue_download(track)
 
     def __append_to_playlist(self, user, playlist):
-        track_ids = self.__get_favorites_track_ids()
-        self.sp.user_playlist_add_tracks(user, playlist, track_ids)
+        current_playlist = self.sp.user_playlist(user, playlist)["tracks"]
+        current_playlist = self.__playlist_to_track_list(current_playlist)
+        current_playlist = set(Model.__get_track_ids(current_playlist))
 
-    def __get_favorites_track_ids(self):
+        track_ids = set(Model.__get_track_ids(self.favorites_list))
+        track_ids = list(track_ids.difference(current_playlist))
+        if track_ids:
+            self.sp.user_playlist_add_tracks(user, playlist, track_ids)
+
+    def __playlist_to_track_list(self, playlist):
+        track_list = []
+        for track in playlist["items"]:
+            track_list.append(SpotifyTrack(track))
+
+        while playlist["next"]:
+            playlist = self.sp.next(playlist)
+            for track in playlist["items"]:
+                track_list.append(SpotifyTrack(track))
+
+        return track_list
+
+    def __save_recent_playlists(self):
+        pickle.dump(self.recent_playlists, open(RECENT_PICKLE_FILE, 'wb'))
+
+    def __add_recent_playlist(self, playlist):
+        key = str(playlist['owner']['id']) + "-" + str(playlist['id'])
+        if key not in self.recent_playlists:
+            self.recent_playlists[key] = {'id': playlist['id'], 'owner': playlist['owner']['id'],
+                                          'name': playlist['name'], 'added': datetime.datetime.now()}
+            if len(self.recent_playlists) > RECENT_LIMIT:
+                self.__remove_oldest_recent_playlist()
+        else:
+            self.recent_playlists[key]['added'] = datetime.datetime.now()
+
+        self.__save_recent_playlists()
+
+    def __remove_oldest_recent_playlist(self):
+        min_key = None
+        oldest_time = datetime.timedelta.min
+        for key, playlist in self.recent_playlists.items():
+            time = datetime.datetime.now() - playlist['added']
+            if time > oldest_time:
+                oldest_time = time
+                min_key = key
+        del self.recent_playlists[min_key]
+
+
+    @staticmethod
+    def __load_recent_playlists():
+        if os.path.isfile(RECENT_PICKLE_FILE):
+            return pickle.load(open(RECENT_PICKLE_FILE, 'rb'))
+        return {}
+
+    @staticmethod
+    def __get_track_ids(track_list):
         result = []
-        for track in self.favorites_list:
+        for track in track_list:
             result.append(track['track']['id'])
         return result
 

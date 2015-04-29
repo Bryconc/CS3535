@@ -7,14 +7,12 @@ import tempfile
 import threading
 import urllib
 
-import echonest.remix.audio as audio
 import echonest.remix.support.ffmpeg as ffmpeg
 
 
 DEBUG_ANALYZER = False
 
 DOWNLOAD_DIRECTORY = "util/Temp_Directory/"
-
 
 class DownloaderThread(threading.Thread):
     def __init__(self, analyzer_thread, amount=0):
@@ -77,45 +75,30 @@ class AnalyzerThread(threading.Thread):
         self.running = True
         while self.analyzed < self.amount and self.running:
             try:
-                # print("Checking for new analysis... %d of %d with queue size %d" % (self.analyzed, self.amount, self.analyze_queue.qsize()))
+                print("Checking for new analysis... %d of %d with queue size %d" % (
+                self.analyzed, self.amount, self.analyze_queue.qsize()))
                 mp3file, track = self.analyze_queue.get()
-                #print("Analyzing " + track['track']['name'])
-                af = audio.LocalAudioFile(mp3file, verbose=DEBUG_ANALYZER)
-                #print("Completed Analysis")
+                af = AnalyzerThread.convert_to_wav(mp3file)
                 self.af_list.append(af)
-                wav = AnalyzerThread.__get_wav(af)
-                #print("Attempting play queue...")
-                self.player.add_audio(wav, track)
+                self.player.add_audio(af, track)
                 self.analyzed += 1
-            except Exception as e:
+            except RuntimeError as e:
                 print("***** Error processing " + track['track']['name'] + " *****")
+                print(e)
                 self.amount -= 1
 
     def unload(self):
         print("Deleting temp wav files")
         for af in self.af_list:
             try:
-                af.unload()
-            except WindowsError:
+                os.remove(af)
+            except WindowsError as e:
                 print("Error with " + str(af))
 
+
     @staticmethod
-    def __get_wav(audio_file):  # Code modified from Luke Stack's aqplayer.
-        """
-        Helper method for __init__
-        :return .wav file from the LocalAudioFile
-        """
-        if audio_file.filename.lower().endswith(".wav") and (audio_file.sampleRate, audio_file.numChannels) == (
-        44100, 2):
-            file_to_read = audio_file.filename
-        elif audio_file.convertedfile:
-            file_to_read = audio_file.convertedfile
-        else:
-            temp_file_handle, audio_file.convertedfile = tempfile.mkstemp(".wav")
-            audio_file.af.sampleRate, audio_file.numChannels = ffmpeg(audio_file.filename, audio_file.convertedfile,
-                                                                      overwrite=True,
-                                                                      numChannels=audio_file.numChannels,
-                                                                      sampleRate=audio_file.sampleRate,
-                                                                      verbose=audio_file.verbose)
-            file_to_read = audio_file.convertedfile
-        return file_to_read
+    def convert_to_wav(mp3file):
+        temp_file_handle, converted_file = tempfile.mkstemp(".wav")
+        ffmpeg.ffmpeg(mp3file, converted_file, overwrite=True, numChannels=2, sampleRate=44100, verbose=DEBUG_ANALYZER)
+        os.close(temp_file_handle)
+        return converted_file

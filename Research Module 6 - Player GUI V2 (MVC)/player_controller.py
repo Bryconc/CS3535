@@ -57,3 +57,6 @@ class Controller(object):
     def export_favorites(self, export_type, **kwargs):
         self.model.export_favorites(export_type, **kwargs)
 
+    def get_recent_playlists(self):
+        return self.model.get_recent_playlists()
+
