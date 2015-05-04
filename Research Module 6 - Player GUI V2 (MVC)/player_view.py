@@ -117,7 +117,7 @@ class View(Observer):
         self.export_menu.add_separator()
         self.export_menu.add_command(label="Export to existing playlist",
                                      command=self.__prompt_for_export_existing_playlist)
-        self.export_menu.add_command(label="Export to new playlist")
+        self.export_menu.add_command(label="Export to new playlist", command=self.__prompt_for_export_new_playlist)
 
         self.playlist_menu = tk.Menu(self.menu_bar, tearoff=0)
         self.playlist_menu.add_command(label="Sample new playlist", command=self.__prompt_for_playlist_input)
@@ -164,6 +164,9 @@ class View(Observer):
 
     def __prompt_for_export_existing_playlist(self):
         export_existing = prompts.ExportExistingPlaylistPrompt(self.root, self.controller)
+
+    def __prompt_for_export_new_playlist(self):
+        export_existing = prompts.ExportNewPlaylistPrompt(self.root, self.controller)
 
     def __update_recent_playlists(self):
         recent_playlists = self.controller.get_recent_playlists()

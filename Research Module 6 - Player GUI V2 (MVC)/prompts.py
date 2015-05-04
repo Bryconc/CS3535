@@ -1,13 +1,21 @@
 __author__ = 'Brycon'
 
 import Tkinter as tk
-import ttk
 
 DEFAULT_CSV_EXPORT_FILE = "export"
 
 
 class PlaylistPrompt(tk.Toplevel):
+    """
+        Prompt for sampling a new Playlist. Contains a simple Entry
+        for the playlist URL and clear options.
+    """
     def __init__(self, parent, controller, *args, **kwargs):
+        """
+            Constructor for the PlaylistPrompt.
+        :param parent:  Parent Container
+        :param controller: reference to the Controller object to make requests of the Model.
+        """
         tk.Toplevel.__init__(self, *args, **kwargs)
         self.__init_prompt()
         self.parent = parent
@@ -20,39 +28,43 @@ class PlaylistPrompt(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", self.__close_handler)
 
     def __close_handler(self):
+        """
+            Responsible for handling the closing of the Toplevel element
+        """
         self.parent.wm_attributes("-disabled", 0)
         self.destroy()
 
     def __init_prompt(self):
+        """
+            Initializes the content of the PlaylistPrompt
+        """
         self.__init_prompt_label()
-        # self.__init_user_frame()
-        # self.__init_playlist_frame()
-        # self.__init_or_frame()
         self.__init_url_frame()
         self.__init_clear_frame()
         self.__init_submit_button()
 
     def __init_prompt_label(self):
+        """
+            Initializes the prompt label, explaining what to do.
+        """
         self.prompt_label = tk.Label(self, text="Please enter the Spotify URL below: ")
         self.prompt_label.pack(pady=10)
 
-    def __init_user_frame(self):
-        self.user_frame = tk.Frame(self)
-        self.user_label = tk.Label(self.user_frame, text="User ID:     ")
-        self.user_entry = tk.Entry(self.user_frame, bd=5)
-        self.user_label.pack(side=tk.LEFT)
-        self.user_entry.pack(side=tk.RIGHT)
-        self.user_frame.pack()
-
-    def __init_playlist_frame(self):
-        self.playlist_frame = tk.Frame(self)
-        self.playlist_label = tk.Label(self.playlist_frame, text="Playlist ID: ")
-        self.playlist_entry = tk.Entry(self.playlist_frame, bd=5)
-        self.playlist_label.pack(side=tk.LEFT)
-        self.playlist_entry.pack(side=tk.RIGHT)
-        self.playlist_frame.pack()
+    def __init_url_frame(self):
+        """
+            Initializes the URL entry frame. For the URL of the playlist to be sampled.
+        """
+        self.url_frame = tk.Frame(self)
+        self.url_label = tk.Label(self.url_frame, text="Spotify Url:")
+        self.url_entry = tk.Entry(self.url_frame, bd=5)
+        self.url_label.pack(side=tk.LEFT)
+        self.url_entry.pack(side=tk.RIGHT)
+        self.url_frame.pack()
 
     def __init_clear_frame(self):
+        """
+            Initializes the clear options frame, containing options for clearing the playlist and favorites frame.
+        """
         self.clear_frame = tk.Frame(self)
 
         self.clear_playlist = tk.IntVar()
@@ -68,43 +80,37 @@ class PlaylistPrompt(tk.Toplevel):
         self.clear_favorites_checkbox.pack(side=tk.RIGHT)
         self.clear_frame.pack()
 
-    def __init_or_frame(self):
-        self.or_frame = tk.Frame(self, width=20)
-        or_separator_top = ttk.Separator(self.or_frame, orient=tk.HORIZONTAL)
-        or_label = tk.Label(self.or_frame, text="Or")
-        or_separator_bottom = ttk.Separator(self.or_frame, orient=tk.HORIZONTAL)
-        or_separator_top.pack(expand=True, fill=tk.X)
-        or_label.pack()
-        or_separator_bottom.pack(expand=True, fill=tk.X)
-        self.or_frame.pack(expand=True)
-
-    def __init_url_frame(self):
-        self.url_frame = tk.Frame(self)
-        self.url_label = tk.Label(self.url_frame, text="Spotify Url:")
-        self.url_entry = tk.Entry(self.url_frame, bd=5)
-        self.url_label.pack(side=tk.LEFT)
-        self.url_entry.pack(side=tk.RIGHT)
-        self.url_frame.pack()
-
     def __init_submit_button(self):
+        """
+            Initializes the submit button for sampling a new playlist.
+        """
         self.submit_button = tk.Button(self, text="Sample", command=self.__validate_new_playlist)
         self.submit_button.pack(pady=(0, 10))
 
     def __validate_new_playlist(self):
-        # if self.url_entry.get():
+        """
+            Validates that the URL entry contains a URL then parses the information out of it
+            and tells the Model to start sampling the new playlist:
+        """
         user_id, playlist_id = self.__process_url()
-        # else:
-        # playlist_id = self.playlist_entry.get()
-        # user_id = self.user_entry.get()
+        if not user_id or not playlist_id:
+            return
         clear_playlist = self.clear_playlist.get()
         clear_favorites = self.clear_favorites.get()
         self.controller.new_playlist(user_id, playlist_id, clear_playlist, clear_favorites)
         self.__close_handler()
 
     def __process_url(self):
+        """
+            Parses the information in the URL entry box. And returns the user id and playlist id
+        :return: A set in the form (user_id, playlist_id) processed from the URL in the URL Entry Box
+        """
         import re
 
         url = self.url_entry.get()
+        if not url:
+            return None, None
+
         regex = r'./user/(?P<user_id>[a-zA-z0-9]+)/playlist/(?P<playlist_id>[a-zA-z0-9]+)'
         regexp = re.compile(regex)
         result = regexp.search(url)
@@ -112,7 +118,15 @@ class PlaylistPrompt(tk.Toplevel):
 
 
 class ExportCSVPrompt(tk.Toplevel):
+    """
+        Prompt for exporting the favorited tracks to a CSV file.
+    """
     def __init__(self, parent, controller, *args, **kwargs):
+        """
+            Constructor for the ExportCSVPrompt.
+        :param parent:  Parent Container
+        :param controller: reference to the Controller object to make requests of the Model.
+        """
         tk.Toplevel.__init__(self, *args, **kwargs)
         self.__init_prompt()
         self.parent = parent
@@ -125,16 +139,25 @@ class ExportCSVPrompt(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", self.__close_handler)
 
     def __close_handler(self):
+        """
+            Responsible for handling the closing of the Toplevel element
+        """
         self.parent.wm_attributes("-disabled", 0)
         self.destroy()
 
     def __init_prompt(self):
+        """
+            Initializes the content of the ExportCSVPrompt
+        """
         self.__init_export_label()
         self.__init_export_entry()
         self.__init_export_options()
         self.__init_export_button()
 
     def __init_export_label(self):
+        """
+            Initializes the export label, explaining what to do.
+        """
         self.export_frame = tk.Frame(self)
         self.export_label = tk.Label(self.export_frame, text="Enter the name for the output file below:",
                                      font="Verdana 10 bold")
@@ -142,6 +165,9 @@ class ExportCSVPrompt(tk.Toplevel):
         self.export_frame.pack()
 
     def __init_export_entry(self):
+        """
+            Initializes the Entry element for the name of the CSV file
+        """
         self.export_entry_frame = tk.Frame(self)
         self.export_entry = tk.Entry(self.export_entry_frame, bd=5)
         self.export_entry.insert(0, DEFAULT_CSV_EXPORT_FILE)
@@ -149,6 +175,9 @@ class ExportCSVPrompt(tk.Toplevel):
         self.export_entry_frame.pack()
 
     def __init_export_options(self):
+        """
+            Initializes the frame exporting CSV values.
+        """
         self.export_options_frame = tk.Frame(self)
 
         self.export_options_label = tk.Label(self.export_options_frame, text="Export CSV file should include: ",
@@ -179,17 +208,30 @@ class ExportCSVPrompt(tk.Toplevel):
         self.export_options_frame.pack()
 
     def __init_export_button(self):
+        """
+            Initializes the button to begin export to CSV
+        """
         self.export_button_frame = tk.Frame(self)
         self.export_button = tk.Button(self.export_button_frame, text="Export", command=self.__validate_export)
         self.export_button.pack()
         self.export_button_frame.pack(pady=(0, 10))
 
     def __validate_export(self):
+        """
+            Validates that the export is possible, then initiates export.
+            Export is possible if a filename is in the entry box and
+            at least one option is selected.
+        """
         if self.export_entry.get():
             if self.export_name.get() or self.export_artists.get() or self.export_album.get() or self.export_preview_url.get():
                 self.__export()
 
     def __export(self):
+        """
+            Export method for CSV exporting.
+            Gathers what information should be exported
+            then makes a call to the Controller
+        """
         information = []
 
         if self.export_name.get():
@@ -210,8 +252,97 @@ class ExportCSVPrompt(tk.Toplevel):
         self.__close_handler()
 
 
+# class ExportExistingPlaylistPrompt(tk.Toplevel):
+# import urllib
+#
+# from PIL import Image, ImageTk
+# def __init__(self, parent, controller, *args, **kwargs):
+#         tk.Toplevel.__init__(self, *args, **kwargs)
+#         self.parent = parent
+#         self.controller = controller
+#         self.__init_prompt()
+#
+#         self.parent.wm_attributes("-disabled", 1)
+#         self.wm_attributes("-topmost", 1)
+#         self.focus()
+#         self.transient(parent)
+#         self.protocol("WM_DELETE_WINDOW", self.__close_handler)
+#
+#     def __close_handler(self):
+#         self.parent.wm_attributes("-disabled", 0)
+#         self.destroy()
+#
+#     def __init_prompt(self):
+#         self.__init_export_label()
+#         self.__init_export_entry()
+#         self.__init_export_button()
+#
+#     def __init_export_label(self):
+#         self.export_frame = tk.Frame(self)
+#         self.export_label = tk.Label(self.export_frame, text="Existing playlists for:" + self.controller.get_current_username(),
+#                                      font="Verdana 10 bold")
+#         self.export_label.pack(pady=10, padx=10)
+#         self.export_frame.pack()
+#
+#     def __init_export_entry(self):
+#         self.export_entry_frame = tk.Frame(self)
+#         playlists = self.controller.get_user_playlists()
+#         from pprint import pprint
+#
+#         if playlists:
+#             for playlist in playlists['items']:
+#                 if playlist['owner']['id'] == self.controller.get_current_username():
+#                     pprint(playlist)
+#                     self.__add_playlist_frame(playlist)
+#
+#         self.export_entry_frame.pack()
+#
+#     def __add_playlist_frame(self, playlist):
+#         playlist_frame = tk.Frame(self.export_entry_frame)
+#         playlist_name_label = tk.Label(playlist_frame, text=playlist['name'])
+#
+#         artwork = ExportExistingPlaylistPrompt.image_from_url(playlist['images'][0]['url'])
+#         playlist_artwork_image = tk.Label(playlist_frame, image=artwork)
+#         playlist_artwork_image.image = artwork
+#
+#         playlist_name_label.pack()
+#         playlist_artwork_image.pack()
+#         playlist_frame.pack()
+#
+#     def __init_export_button(self):
+#         self.export_button_frame = tk.Frame(self)
+#         self.export_button = tk.Button(self.export_button_frame, text="Exit", command=self.__close_handler)
+#         self.export_button.pack()
+#         self.export_button_frame.pack(pady=(10, 10))
+#
+#     def __validate_export(self):
+#         if self.export_entry.get():
+#             self.__export()
+#
+#     def __export(self, user_id, playlist_id):
+#         self.controller.export_favorites('existing', playlist=playlist_id, user=user_id)
+#         self.__close_handler()
+#
+#     @staticmethod
+#     def image_from_url(url):
+#         image_file, headers = urllib.urlretrieve(url, 'util/Temp_Directory/temp_art3.jpg')
+#         img = Image.open(image_file)
+#         maxsize = (240, 240)
+#         img.thumbnail(maxsize, Image.ANTIALIAS)
+#         pic = ImageTk.PhotoImage(img)
+#         return pic
+
 class ExportExistingPlaylistPrompt(tk.Toplevel):
+    """
+        Prompt for exporting the favorited tracks to an Existing Playlist
+    """
+
     def __init__(self, parent, controller, *args, **kwargs):
+        """
+            Constructor for the ExportExistingPlaylistPrompt
+        :param parent:  Parent Container
+        :param controller: reference to the Controller object to make requests of the Model.
+        """
         tk.Toplevel.__init__(self, *args, **kwargs)
         self.__init_prompt()
         self.parent = parent
@@ -224,15 +355,24 @@ class ExportExistingPlaylistPrompt(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", self.__close_handler)
 
     def __close_handler(self):
+        """
+            Responsible for handling the closing of the Toplevel element
+        """
         self.parent.wm_attributes("-disabled", 0)
         self.destroy()
 
     def __init_prompt(self):
+        """
+            Initializes the content of the ExportExistingPlaylist Prompt
+        """
         self.__init_export_label()
         self.__init_export_entry()
         self.__init_export_button()
 
     def __init_export_label(self):
+        """
+            Initializes the export label, explaining what to do.
+        """
         self.export_frame = tk.Frame(self)
         self.export_label = tk.Label(self.export_frame, text="Enter the url of your playlist to extend:",
                                      font="Verdana 10 bold")
@@ -240,31 +380,132 @@ class ExportExistingPlaylistPrompt(tk.Toplevel):
         self.export_frame.pack()
 
     def __init_export_entry(self):
+        """
+            Initializes the entry frame for the URL of the existing playlist
+        """
         self.export_entry_frame = tk.Frame(self)
         self.export_entry = tk.Entry(self.export_entry_frame, bd=5)
         self.export_entry.pack()
         self.export_entry_frame.pack()
 
     def __init_export_button(self):
+        """
+            Initializes the export button, which initializes the export when clicked.
+        """
         self.export_button_frame = tk.Frame(self)
         self.export_button = tk.Button(self.export_button_frame, text="Export", command=self.__validate_export)
         self.export_button.pack()
         self.export_button_frame.pack(pady=(10, 10))
 
     def __validate_export(self):
+        """
+            Checks to make sure a URL is supplied for export. Then exports.
+        """
         if self.export_entry.get():
             self.__export()
 
     def __parse_url(self):
+        """
+            Parses the information in the URL entry box. And returns the user id and playlist id
+        :return: A set in the form (user_id, playlist_id) processed from the URL in the URL Entry Box.
+        """
         import re
 
         url = self.export_entry.get()
+        if not url:
+            return None, None
         regex = r'./user/(?P<user_id>[a-zA-z0-9]+)/playlist/(?P<playlist_id>[a-zA-z0-9]+)'
         regexp = re.compile(regex)
         result = regexp.search(url)
         return result.group('user_id'), result.group('playlist_id')
 
     def __export(self):
+        """
+            Export method for existing playlist exporting
+            Makes a call to the Controller applying specific information
+        """
         user_id, playlist_id = self.__parse_url()
         self.controller.export_favorites('existing', playlist=playlist_id, user=user_id)
+        self.__close_handler()
+
+
+class ExportNewPlaylistPrompt(tk.Toplevel):
+    """
+        Prompt for exporting the favorited tracks to a new playlist
+    """
+
+    def __init__(self, parent, controller, *args, **kwargs):
+        """
+            Constructor for the ExportNewPlaylistPrompt
+        :param parent:  Parent Container
+        :param controller: reference to the Controller object to make requests of the Model.
+        """
+        tk.Toplevel.__init__(self, *args, **kwargs)
+        self.__init_prompt()
+        self.parent = parent
+        self.controller = controller
+
+        self.parent.wm_attributes("-disabled", 1)
+        self.wm_attributes("-topmost", 1)
+        self.focus()
+        self.transient(parent)
+        self.protocol("WM_DELETE_WINDOW", self.__close_handler)
+
+    def __close_handler(self):
+        """
+            Responsible for handling the closing of the Toplevel element
+        """
+        self.parent.wm_attributes("-disabled", 0)
+        self.destroy()
+
+    def __init_prompt(self):
+        """
+            Initializes the content of the ExportNewPlaylistPrompt
+        """
+        self.__init_export_label()
+        self.__init_export_entry()
+        self.__init_export_button()
+
+    def __init_export_label(self):
+        """
+            Initializes the export label, explaining what to do
+        """
+        self.export_frame = tk.Frame(self)
+        self.export_label = tk.Label(self.export_frame, text="Enter the name of your new playlist:",
+                                     font="Verdana 10 bold")
+        self.export_label.pack(pady=10, padx=10)
+        self.export_frame.pack()
+
+    def __init_export_entry(self):
+        """
+            Initializes the Entry box for the name of the new playlist
+        """
+        self.export_entry_frame = tk.Frame(self)
+        self.export_entry = tk.Entry(self.export_entry_frame, bd=5)
+        self.export_entry.pack()
+        self.export_entry_frame.pack()
+
+    def __init_export_button(self):
+        """
+            Initializes the export button to initiate export
+        """
+        self.export_button_frame = tk.Frame(self)
+        self.export_button = tk.Button(self.export_button_frame, text="Export", command=self.__validate_export)
+        self.export_button.pack()
+        self.export_button_frame.pack(pady=(10, 10))
+
+    def __validate_export(self):
+        """
+            Checks to be sure the Export Entry has a name then exports.
+        """
+        if self.export_entry.get():
+            self.__export()
+
+    def __export(self):
+        """
+            Export method for new playlist exporting
+            Makes a call to the Controller applying specific information
+        """
+        playlist_name = self.export_entry.get()
+        self.controller.export_favorites('new', playlist=playlist_name)
         self.__close_handler()

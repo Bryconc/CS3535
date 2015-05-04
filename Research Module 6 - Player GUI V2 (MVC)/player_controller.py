@@ -60,3 +60,9 @@ class Controller(object):
     def get_recent_playlists(self):
         return self.model.get_recent_playlists()
 
+    def get_user_playlists(self):
+        return self.model.get_user_playlists()
+
+    def get_current_username(self):
+        return self.model.get_current_username()
+

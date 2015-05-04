@@ -35,6 +35,7 @@ class Model(Observable):
         self.current_track_number = 0
         self.playlist_amount = 0
 
+        self.sp = None
         self.current_track = None
         self.player = None
         self.analyzer = None
@@ -74,11 +75,21 @@ class Model(Observable):
 
     def set_spotify_playlist(self, username, playlist):
         self.__set_spotipy_info(username, playlist)
-        token = self.__request_spotipy_token()
-        if token:
-            self.__request_spotipy_object(token)
-            self.__retrieve_playlist()
+        self.__authenticate_login()
+        self.__retrieve_playlist()
         self.setup()
+
+    def get_user_playlists(self):
+        if not self.sp:
+            return None
+
+        return self.sp.user_playlists(self.sp.current_user()['id'])
+
+    def get_current_username(self):
+        if not self.sp:
+            return "(Not Logged In)"
+
+        return self.sp.current_user()['id']
 
     def get_current_track(self):
         return self.current_track
@@ -143,12 +154,22 @@ class Model(Observable):
             self.set_spotify_playlist(user_id, playlist_id)
 
     def export_favorites(self, export_type, **kwargs):
-        print("Exporting favorites type %s" % export_type)
-        if export_type == 'csv':
-            self.export_csv(**kwargs)
-        elif export_type == 'existing':
-            print("In here")
-            self.export_existing_playlist(kwargs["user"], kwargs["playlist"])
+        try:
+            print("Exporting favorites type %s" % export_type)
+            if export_type == 'csv':
+                self.export_csv(**kwargs)
+            elif export_type == 'existing':
+                self.export_existing_playlist(kwargs["user"], kwargs["playlist"])
+            elif export_type == 'new':
+                self.export_new_playlist(kwargs["playlist"])
+        except spotipy.SpotifyException as e:
+            print("Checking exception: %s" % e.message)
+            if "The access token expired" in e.message:
+                print("Token expired: attempting to re-authenticate login.")
+                self.__authenticate_login()
+                self.export_favorites(export_type, **kwargs)
+            else:
+                raise
 
     def export_csv(self, **kwargs):
         file_name = kwargs['file_name']
@@ -178,6 +199,11 @@ class Model(Observable):
     def export_existing_playlist(self, user, playlist):
         self.__append_to_playlist(user, playlist)
 
+    def export_new_playlist(self, playlist):
+        user = self.sp.current_user()['id']
+        playlist = self.sp.user_playlist_create(user, playlist, public=False)
+        self.__append_to_playlist(user, playlist['id'])
+
     ###################################
     # #
     # BEGIN PRIVATE UTILITY METHODS  #
@@ -188,11 +214,16 @@ class Model(Observable):
         self.spotipy_username = username
         self.spotipy_playlist_id = playlist_id
 
+    def __authenticate_login(self):
+        token = self.__request_spotipy_token()
+        if token:
+            self.__request_spotipy_object(token)
+
     def __request_spotipy_token(self):
         if not self.spotipy_username or not self.spotipy_playlist_id:
             raise InvalidInputException("You must set the spotipy information first.")
 
-        scopes = 'playlist-modify-public playlist-modify-private'
+        scopes = 'playlist-modify-public playlist-modify-private playlist-read-private'
 
         return spotipy.util.prompt_for_user_token(self.spotipy_username, scope=scopes, client_id=CLIENT_ID,
                                                   client_secret=CLIENT_SECRET, redirect_uri=REDIRECT_URI)
