@@ -8,6 +8,8 @@ The application now works in a threaded manner. The tracks will queue up, downlo
 
 The application works off a pipeline process like so.
 
+<img src="https://github.com/Bryconc/CS3535/blob/master/Research%20Module%204%20-%20Spotify%20Playlist%20Sampler%20Asynchronous/Sampler%20Pipeline.png?raw=true">
+
 **Dependencies**
 
 At the moment this MUST be done on a Windows computer. Mac support will come later.
